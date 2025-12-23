@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        .box-card {
+            margin: 30px;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px 1px #ccc;
+            overflow: hidden;
+        }
+
+        .head {
+            background-color: #396aaa;
+            color: white;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .message-box {
+            background-color: #396aaa;
+            border-radius: 10px;
+            margin: 5px;
+            padding: 5px;
+            border-bottom-right-radius: 0;
+            color: white;
+            line-height: 25px;
+            max-width: 250px;
+            /* 自动换行 */
+            word-wrap: break-word;
+        }
+
+        .reply-box {
+            background-color: #fc007c;
+            border-radius: 10px;
+            margin: 5px;
+            padding: 5px;
+            border-bottom-left-radius: 0;
+            color: white;
+            line-height: 25px;
+            max-width: 250px;
+            /* 自动换行 */
+            word-wrap: break-word;
+            align-self: self-start;
+        }
+
+        .body {
+            height: 500px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+            overflow: auto;
+        }
+
+        .input {
+            padding: 10px;
+            height: 55px;
+            display: flex;
+        }
+
+
+        .input input:nth-child(1) {
+            flex-grow: 5;
+            border: 2px solid black;
+            border-radius: 50px;
+            margin-right: 5px;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            font-size: 15px;
+            line-height: 25px;
+            outline: none;
+        }
+
+        .input input:nth-child(2) {
+            flex-grow: 1;
+            background-color: #396aaa;
+            color: white;
+            border: 2px solid black;
+            border-radius: 50px;
+            cursor: pointer;
+            line-height: 35px;
+            text-align: center;
+        }
+
+        .input input:nth-child(2):hover {
+            background-color: #275ca1;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="box-card">
+        <div class="head">
+            <h3>极简聊天窗口</h3>
+        </div>
+        <div class="body"></div>
+        <div class="input">
+            <input type="text" class="message" placeholder="输入消息...">
+            <input type="button" class="button" value="发送">
+        </div>
+    </div>
+
+    <script>
+        let message = document.querySelector('.message')
+        let button = document.querySelector('.button')
+        let body = document.querySelector('.body')
+
+        message.addEventListener('keydown', function (e) {
+            if (e.key == "Enter" && message.value != "") {
+                let mg = document.createElement("div")
+                mg.className = "message-box"
+                mg.innerHTML = message.value
+                body.appendChild(mg)
+                message.value = ""
+            }
+        })
+
+        button.addEventListener('click', function () {
+            if (message.value != "") {
+                let mg = document.createElement("div")
+                mg.className = "message-box"
+                mg.innerHTML = message.value
+                body.appendChild(mg)
+                message.value = ""
+                let rp = document.createElement("div")
+                rp.className = "reply-box"
+                rp.innerHTML = "嘻嘻哈哈"
+                body.appendChild(rp)
+            }
+        })
+    </script>
+
+</body>
+
+</html>

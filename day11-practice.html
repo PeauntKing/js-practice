@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./axios.min.js"></script>
+    <meta name="referrer" content="no-referrer">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .box-card {
+            width: 400px;
+            border-radius: 15px;
+            box-shadow: 5px 5px 8px 2px #ccc;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+
+        .videospic{
+            margin: 15px 10px 10px 10px;
+            width: 380px;
+            height: 220px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .posterpic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*保持图片比例填充*/
+        }
+
+        .footer{
+            margin: 0 10px 15px 10px;
+            width: 380px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            flex: 1;
+            min-height: 60px;
+        }
+
+        .upic{
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .content{
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 60px;
+        }
+
+        .title{
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight:550;
+            font-size: 16px;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
+        }
+
+        .uname{
+            color: #b0afaf;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- <div class="box-card">
+        <div class="videospic">
+            <img class="posterpic" src="./images/hanxin_head.jpg" alt="">
+        </div>
+        <div class="footer">
+            <img class="upic" src="./images/hanxin_head.jpg" alt="">
+            <div class="content">
+                <a class="title" href="">复盘据（最后的对决）：天才神医PK老玩家，上演碟中谍中谍？</a>
+                <p class="uname">清河电影</p>
+            </div>
+        </div>
+    </div> -->
+    <script>
+        axios({
+            url:'https://m1.apifoxmock.com/m1/7510026-7245733-default/getAllVideos',
+            method:'get',
+        }).then(function(result){
+            let list = result.data.data.videos
+            console.log(list[0])
+
+            let body = document.querySelector("body")
+            for (let i = 0;i < list.length; i++){
+                let posterPic = list[i].posterPic
+                let uPic = list[i].userPic
+                let title = list[i].title
+                let uname = list[i].userName
+                let playurl = list[i].playUrl
+
+                let boxCard = document.createElement("div")
+                boxCard.className = "box-card"
+                body.appendChild(boxCard)
+
+                let videospic = document.createElement("div")
+                videospic.className = "videospic"
+                boxCard.appendChild(videospic)
+                let posterpic = document.createElement("img")
+                posterpic.className = "posterpic"
+                posterpic.src = posterPic
+                videospic.appendChild(posterpic)
+
+                let footer = document.createElement("div")
+                footer.className = "footer"
+                boxCard.appendChild(footer)
+                let upic = document.createElement("img")
+                upic.className = "upic"
+                upic.src = uPic
+                footer.appendChild(upic)
+                let content = document.createElement("div")
+                content.className = "content"
+                footer.appendChild(content)
+                let tl = document.createElement("a")
+                tl.className = "title"
+                tl.innerHTML = title
+                tl.href = playurl
+                content.appendChild(tl)
+                let un = document.createElement("p")
+                un.className = "uname"
+                un.innerHTML = uname
+                content.appendChild(un)
+                
+            }
+        }).catch((error)=>{
+            console.log(error);
+        })
+    </script>
+</body>
+
+</html>

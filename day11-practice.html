@@ -15,12 +15,13 @@
             box-sizing: border-box;
         }
 
-        body {
+        .list-box {
             display: flex;
             flex-flow: row wrap;
             justify-content: center;
             gap: 20px;
             padding: 20px;
+            padding-top: 30px;
             background-color: #f5f5f5;
         }
 
@@ -34,21 +35,23 @@
             background-color: white;
         }
 
-        .videospic{
+        .videospic {
             margin: 15px 10px 10px 10px;
             width: 380px;
             height: 220px;
             border-radius: 8px;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .posterpic {
             width: 100%;
             height: 100%;
-            object-fit: cover; /*保持图片比例填充*/
+            object-fit: cover;
+            /*保持图片比例填充*/
         }
 
-        .footer{
+        .footer {
             margin: 0 10px 15px 10px;
             width: 380px;
             display: flex;
@@ -58,7 +61,7 @@
             min-height: 60px;
         }
 
-        .upic{
+        .upic {
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -66,7 +69,7 @@
             object-fit: cover;
         }
 
-        .content{
+        .content {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -74,10 +77,10 @@
             min-height: 60px;
         }
 
-        .title{
+        .title {
             color: black;
             text-decoration: none;
-            font-weight:550;
+            font-weight: 550;
             font-size: 16px;
             line-height: 1.4;
             overflow: hidden;
@@ -85,17 +88,42 @@
             margin-bottom: 8px;
         }
 
-        .uname{
+        .uname {
             color: #b0afaf;
             font-size: 14px;
             line-height: 1.2;
         }
 
+        .next-page {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+
+        #btn {
+            min-width: 70px;
+            padding: 0 10px;
+            height: 50px;
+            border: 0;
+            background-color: rgb(252, 177, 37);
+            color: white;
+            border-radius: 10px;
+            font-size: 20px;
+            line-height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #btn:hover {
+            background-color: rgb(246, 164, 11);
+        }
     </style>
 </head>
 
 <body>
-    <!-- <div class="box-card">
+    <div class="list-box">
+        <!-- <div class="box-card">
         <div class="videospic">
             <img class="posterpic" src="./images/hanxin_head.jpg" alt="">
         </div>
@@ -106,60 +134,171 @@
                 <p class="uname">清河电影</p>
             </div>
         </div>
-    </div> -->
+        </div> -->
+    </div>
+    <div class="next-page">
+        <button id="btn">下一页</button>
+    </div>
+
     <script>
-        axios({
-            url:'https://m1.apifoxmock.com/m1/7510026-7245733-default/getAllVideos',
-            method:'get',
-        }).then(function(result){
-            let list = result.data.data.videos
-            console.log(list[0])
 
-            let body = document.querySelector("body")
-            for (let i = 0;i < list.length; i++){
-                let posterPic = list[i].posterPic
-                let uPic = list[i].userPic
-                let title = list[i].title
-                let uname = list[i].userName
-                let playurl = list[i].playUrl
+        //当前页数和总页数
+        let listBox = document.querySelector(".list-box")
+        const btn = document.getElementById('btn')
+        let currentPage = 1
+        let totalPages = 1
+        const pageSize = 8
 
+        //使用命名函数以便移除
+        //定义全局的事件处理函数（这样removeEventListener才能工作）
+        function handleMouseEnter() {
+            this.muted = true
+            this.play().catch(e => console.log("自动播放被阻止", e))
+        }
+        function handleMouseLeave() {
+            this.pause()
+            this.currentTime = 0
+        }
+        function handleClick() {
+            open(this.src, '_blank')
+        }
+
+        //初始化加载第一页
+        loadPage(currentPage);
+
+        //给下一页按钮绑定事件
+        btn.addEventListener('click', function () {
+            console.log(currentPage)
+            if (currentPage < totalPages) {
+                currentPage++
+                loadPage(currentPage)
+            }
+        })
+
+        /**
+        *加载指定页数的数据
+        */
+        function loadPage(pageNum) {
+            // 显示加载状态
+            btn.disabled = true
+            btn.textContent = '加载中...'
+
+            //清空现有内容
+            listBox.innerHTML = '<div class="loading">加载中...</div>'
+
+            //GET请求数据
+            axios({
+                url: 'https://m1.apifoxmock.com/m1/7510026-7245733-default/getAllVideos',
+                method: 'get',
+                params: {
+                    page: pageNum,
+                    size: pageSize
+                }
+            }).then(function (result) {
+                const data = result.data.data
+                const list = data.videos           //视频列表
+                const pagination = data.pagination //分页信息
+
+                //使用API返回的分页信息
+                currentPage = pagination.currentPage  //当前页码
+                totalPages = pagination.totalPages      //总页数
+
+                //console打印一下当前页面状态
+                console.log(`加载第${currentPage}页，共${totalPages}页，${list.length}个视频`);
+
+                //清空列表
+                listBox.innerHTML = ""
+
+                //创建卡片
+                createListbox(list)
+
+                //绑定视频的鼠标事件
+                bindVideoEvents()
+
+                //更新按钮状态
+                updateButtonState()
+
+            }).catch((error) => {
+                console.log('加载失败', error);
+                listBox.innerHTML = '<div class="loading">加载失败，请重试</div>'
+                btn.disabled = false
+                btn.textContent = "重试"
+            })
+        }
+
+        /**
+        * 创建视频卡片列表
+        */
+        function createListbox(list) {
+            //非空处理
+            if (list.length === 0) {
+                listBox.innerHTML = '<div class="loading">没有更多视频了</div>'
+                return
+            }
+
+            for (let i = 0; i < list.length; i++) {
+                const video = list[i]
                 let boxCard = document.createElement("div")
                 boxCard.className = "box-card"
-                body.appendChild(boxCard)
-
-                let videospic = document.createElement("div")
-                videospic.className = "videospic"
-                boxCard.appendChild(videospic)
-                let posterpic = document.createElement("video")
-                posterpic.className = "posterpic"
-                posterpic.src = playurl
-                posterpic.poster = posterPic
-                posterpic.controls = true
-                videospic.appendChild(posterpic)
-
-                let footer = document.createElement("div")
-                footer.className = "footer"
-                boxCard.appendChild(footer)
-                let upic = document.createElement("img")
-                upic.className = "upic"
-                upic.src = uPic
-                footer.appendChild(upic)
-                let content = document.createElement("div")
-                content.className = "content"
-                footer.appendChild(content)
-                let tl = document.createElement("p")
-                tl.className = "title"
-                tl.innerHTML = title
-                content.appendChild(tl)
-                let un = document.createElement("p")
-                un.className = "uname"
-                un.innerHTML = uname
-                content.appendChild(un)
-                
+                boxCard.innerHTML = `<div class="videospic">
+                                        <video class="posterpic" src="${video.playUrl}" poster="${video.posterPic}">
+                                    </div>
+                                    <div class="footer">
+                                        <img class="upic" src="${video.userPic}" alt="${video.userName}的头像">
+                                        <div class="content">
+                                            <p class="title">${video.title}</p>
+                                            <p class="uname">${video.userName}</p>
+                                        </div>
+                                    </div>`
+                listBox.appendChild(boxCard)
             }
-        }).catch((error)=>{
-            console.log(error);
+        }
+
+        /**
+        *绑定视频的鼠标事件
+        **/
+        function bindVideoEvents() {
+            let videoList = document.querySelectorAll("video")
+            videoList.forEach(function (video) {
+                //移除旧的监听器
+                video.removeEventListener('mouseenter', handleMouseEnter)
+                video.removeEventListener('mouseleave', handleMouseLeave)
+                video.removeEventListener('click', handleClick)
+
+                //添加新的监听器
+                video.addEventListener('mouseenter', handleMouseEnter)
+                video.addEventListener('mouseleave', handleMouseLeave)
+                video.addEventListener('click', handleClick)
+            })
+        }
+
+        /**
+        *更新按钮状态
+        **/
+        function updateButtonState() {
+            if (currentPage >= totalPages) {
+                btn.disabled = true
+                btn.textContent = "没有更多了"
+            } else {
+                btn.disabled = false
+                btn.textContent = `下一页${currentPage}/${totalPages}`
+            }
+            console.log('按钮状态', btn.disabled, btn.textContent)
+        }
+
+        // 键盘快捷键
+        document.addEventListener('keydown', function (e) {
+            if (e.key === "ArrowRight" && currentPage < totalPages) {
+                currentPage++
+                loadPage(currentPage)
+            } else if (e.key === "ArrowLeft" && currentPage > 1) {
+                currentPage--
+                loadPage(currentPage)
+            }
         })
+
+        //添加调试：检查按钮初始状态
+        console.log('按钮初始状态', btn.disabled, btn.textContent)
     </script>
 </body>
 

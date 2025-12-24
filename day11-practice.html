@@ -77,7 +77,6 @@
         .title{
             color: black;
             text-decoration: none;
-            cursor: pointer;
             font-weight:550;
             font-size: 16px;
             line-height: 1.4;
@@ -131,9 +130,11 @@
                 let videospic = document.createElement("div")
                 videospic.className = "videospic"
                 boxCard.appendChild(videospic)
-                let posterpic = document.createElement("img")
+                let posterpic = document.createElement("video")
                 posterpic.className = "posterpic"
-                posterpic.src = posterPic
+                posterpic.src = playurl
+                posterpic.poster = posterPic
+                posterpic.controls = true
                 videospic.appendChild(posterpic)
 
                 let footer = document.createElement("div")
@@ -146,10 +147,9 @@
                 let content = document.createElement("div")
                 content.className = "content"
                 footer.appendChild(content)
-                let tl = document.createElement("a")
+                let tl = document.createElement("p")
                 tl.className = "title"
                 tl.innerHTML = title
-                tl.href = playurl
                 content.appendChild(tl)
                 let un = document.createElement("p")
                 un.className = "uname"

@@ -238,16 +238,18 @@
 
             for (let i = 0; i < list.length; i++) {
                 const video = list[i]
+                //解构取值
+                const {playUrl, posterPic, userPic, userName, title} = video
                 let boxCard = document.createElement("div")
                 boxCard.className = "box-card"
                 boxCard.innerHTML = `<div class="videospic">
-                                        <video class="posterpic" src="${video.playUrl}" poster="${video.posterPic}">
+                                        <video class="posterpic" src="${playUrl}" poster="${posterPic}"></video>
                                     </div>
                                     <div class="footer">
-                                        <img class="upic" src="${video.userPic}" alt="${video.userName}的头像">
+                                        <img class="upic" src="${userPic}" alt="${userName}的头像">
                                         <div class="content">
-                                            <p class="title">${video.title}</p>
-                                            <p class="uname">${video.userName}</p>
+                                            <p class="title">${title}</p>
+                                            <p class="uname">${userName}</p>
                                         </div>
                                     </div>`
                 listBox.appendChild(boxCard)

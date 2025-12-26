@@ -167,7 +167,7 @@
         loadPage(currentPage);
 
         //给下一页按钮绑定事件
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', () =>{
             console.log(currentPage)
             if (currentPage < totalPages) {
                 currentPage++
@@ -178,7 +178,7 @@
         /**
         *加载指定页数的数据
         */
-        function loadPage(pageNum) {
+        function loadPage(pageNum=1) {
             // 显示加载状态
             btn.disabled = true
             btn.textContent = '加载中...'
@@ -194,7 +194,7 @@
                     page: pageNum,
                     size: pageSize
                 }
-            }).then(function (result) {
+            }).then(result => {
                 const data = result.data.data
                 const list = data.videos           //视频列表
                 const pagination = data.pagination //分页信息
@@ -218,7 +218,7 @@
                 //更新按钮状态
                 updateButtonState()
 
-            }).catch((error) => {
+            }).catch(error => {
                 console.log('加载失败', error);
                 listBox.innerHTML = '<div class="loading">加载失败，请重试</div>'
                 btn.disabled = false
@@ -229,7 +229,7 @@
         /**
         * 创建视频卡片列表
         */
-        function createListbox(list) {
+        const createListbox = (list) => {
             //非空处理
             if (list.length === 0) {
                 listBox.innerHTML = '<div class="loading">没有更多视频了</div>'
@@ -259,9 +259,9 @@
         /**
         *绑定视频的鼠标事件
         **/
-        function bindVideoEvents() {
+        const bindVideoEvents = ()=> {
             let videoList = document.querySelectorAll("video")
-            videoList.forEach(function (video) {
+            videoList.forEach(video => {
                 //移除旧的监听器
                 video.removeEventListener('mouseenter', handleMouseEnter)
                 video.removeEventListener('mouseleave', handleMouseLeave)
@@ -277,7 +277,7 @@
         /**
         *更新按钮状态
         **/
-        function updateButtonState() {
+        const updateButtonState = () => {
             if (currentPage >= totalPages) {
                 btn.disabled = true
                 btn.textContent = "没有更多了"
@@ -289,7 +289,7 @@
         }
 
         // 键盘快捷键
-        document.addEventListener('keydown', function (e) {
+        document.addEventListener('keydown',  e => {
             if (e.key === "ArrowRight" && currentPage < totalPages) {
                 currentPage++
                 loadPage(currentPage)
